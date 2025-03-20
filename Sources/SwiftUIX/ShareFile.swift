@@ -1,4 +1,9 @@
 import SwiftUI
+#if os(iOS)
+import UIKit
+#elseif os(macOS)
+import AppKit
+#endif
 
 /// View extension for sharing files
 public extension View {
@@ -51,6 +56,7 @@ public struct FileShareModifier: ViewModifier {
     }
 }
 
+#if os(iOS)
 /// UIViewControllerRepresentable for UIActivityViewController (Share Sheet)
 public struct ShareSheet: UIViewControllerRepresentable {
     let activityItems: [Any]
@@ -69,3 +75,43 @@ public struct ShareSheet: UIViewControllerRepresentable {
     
     public func updateUIViewController(_ uiViewController: UIActivityViewController, context: Context) {}
 }
+#elseif os(macOS)
+/// NSViewControllerRepresentable for NSSharingServicePicker (Share Sheet)
+public struct ShareSheet: NSViewControllerRepresentable {
+    let activityItems: [Any]
+    
+    public init(activityItems: [Any]) {
+        self.activityItems = activityItems
+    }
+    
+    public func makeNSViewController(context: Context) -> NSViewController {
+        let controller = NSViewController()
+        let button = NSButton(frame: NSRect(x: 0, y: 0, width: 100, height: 30))
+        button.title = "Share"
+        button.bezelStyle = .rounded
+        button.target = context.coordinator
+        button.action = #selector(Coordinator.showShareSheet(_:))
+        controller.view = button
+        return controller
+    }
+    
+    public func updateNSViewController(_ nsViewController: NSViewController, context: Context) {}
+    
+    public func makeCoordinator() -> Coordinator {
+        Coordinator(self)
+    }
+    
+    public class Coordinator: NSObject {
+        let parent: ShareSheet
+        
+        init(_ parent: ShareSheet) {
+            self.parent = parent
+        }
+        
+        @objc func showShareSheet(_ sender: NSButton) {
+            let picker = NSSharingServicePicker(items: parent.activityItems)
+            picker.show(relativeTo: .zero, of: sender, preferredEdge: .minY)
+        }
+    }
+}
+#endif
