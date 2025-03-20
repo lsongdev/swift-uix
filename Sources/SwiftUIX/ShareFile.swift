@@ -77,6 +77,7 @@ public struct ShareSheet: UIViewControllerRepresentable {
 }
 #elseif os(macOS)
 /// NSViewControllerRepresentable for NSSharingServicePicker (Share Sheet)
+@MainActor
 public struct ShareSheet: NSViewControllerRepresentable {
     let activityItems: [Any]
     
@@ -101,6 +102,7 @@ public struct ShareSheet: NSViewControllerRepresentable {
         Coordinator(self)
     }
     
+    @MainActor
     public class Coordinator: NSObject {
         let parent: ShareSheet
         
