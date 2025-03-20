@@ -7,7 +7,7 @@ let package = Package(
     name: "SwiftUIX",
     platforms: [
         .iOS(.v16),
-        .macOS(.v12),
+        .macOS(.v13),
         .watchOS(.v8),
         .tvOS(.v15)
     ],
